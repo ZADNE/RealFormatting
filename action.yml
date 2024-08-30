@@ -36,10 +36,3 @@ runs:
       with:
         clang-format-version: '17'
         check-path: 'Real/${{ env.repo-name }}/${{ inputs.path }}'
-
-    - name: Report failure in job summary
-      if: failure()
-      run: |
-        DEEPLINK="${{ github.server_url }}/${{ github.repository }}/commit/${{ env.SHA }}"
-        echo -e "Format check failed on commit [${GITHUB_SHA:0:8}]($DEEPLINK) with files:\n$(<$GITHUB_WORKSPACE/failing-files.txt)" >> $GITHUB_STEP_SUMMARY
-      shell: bash
