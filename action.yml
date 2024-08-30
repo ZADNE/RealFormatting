@@ -1,0 +1,45 @@
+name: Real formatting check
+description: Checks that a repository is formatted according to Real style
+inputs:
+  repository:
+    description: Repository to check formatting of
+  ref:
+    description: The branch to check formatting of
+    default: main
+  path:
+    description: Path within repo to check formatting of
+    default: .
+
+runs:
+  using: "composite"
+  steps:
+    - name: Prepare variables
+      shell: bash
+      run: |
+        echo "repo-name=$(basename -- "${{ inputs.repository }}")" >> $GITHUB_ENV
+
+    - name: Clone Real
+      uses: actions/checkout@v4
+      with:
+        repository: ZADNE/Real
+
+    - name: Clone checked repo
+      uses: actions/checkout@v4
+      with:
+        repository: '${{ inputs.repository }}'
+        ref: '${{ inputs.ref }}'
+        path: 'Real/${{ env.repo-name }}'
+        clean: false
+
+    - name: Check formatting
+      uses: jidicula/clang-format-action@v4.13.0
+      with:
+        clang-format-version: '17'
+        check-path: 'Real/${{ env.repo-name }}/${{ inputs.path }}'
+
+    - name: Report failure in job summary
+      if: failure()
+      run: |
+        DEEPLINK="${{ github.server_url }}/${{ github.repository }}/commit/${{ env.SHA }}"
+        echo -e "Format check failed on commit [${GITHUB_SHA:0:8}]($DEEPLINK) with files:\n$(<$GITHUB_WORKSPACE/failing-files.txt)" >> $GITHUB_STEP_SUMMARY
+      shell: bash
