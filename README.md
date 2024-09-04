@@ -7,7 +7,7 @@ This action checks whether a repo is formatted according to [Real coding style](
 ## Usage
 
 ```yaml
-- uses: ZADNE/RealFormatting
+- uses: ZADNE/RealFormatting@v0.1
   with:
     # The repository to check formatting of (e.g. ZADNE/RealEngine)
     repository:
